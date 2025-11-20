@@ -755,7 +755,7 @@ Aceitou Política: Sim`;
                     // Modal de erro separado
                     showModal({
                         title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
-                        message: !(err?.status && err.status === 400) ?"Por favor, tente novamente.\nCaso o erro persista, contate o email: contato@aiesec.org.br" : "",
+                        message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: contato@aiesec.org.br" : "",
                         type: "error",
                         showConfirm: false,
                         showCancel: true,
