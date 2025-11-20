@@ -1,11 +1,5 @@
 const containerTelefone = document.getElementById('telefones-container');
 const containerEmail = document.getElementById('emails-container');
-const siglaProduto = [
-    'gv', // Voluntário Global
-    'gtast', // Talento Global Short Term
-    'gtalt', // Talento Global Mid e Long Term
-    'gte' // Professor Global
-];
 const escritorios = [
     "AB",  // ABC
     "AJ",  // ARACAJU
@@ -34,8 +28,9 @@ const escritorios = [
     "VT",  // VITÓRIA
     "MC" // BRASIL (NACIONAL)
 ];
+const idCL = [];
+const camposErro = [];
 let campos;
-let idCL = [];
 let indiceSiglaCL;
 let parametros;
 let aiesecProxima;
@@ -43,6 +38,99 @@ let todasAiesecs;
 
 containerEmail.innerHTML = '';
 containerTelefone.innerHTML = '';
+
+/**
+ * Exibe um modal padronizado.
+ * - Centraliza em um único ponto a criação/atualização do conteúdo e botões do modal
+ * - Permite tratar mensagens vindas do backend (ex: {"error": "Nome inválido"}, status 400)
+ * - Mantém compatibilidade com os usos anteriores no código
+ *
+ * @param {Object} options Configurações do modal
+ * @param {string} options.title Título do modal
+ * @param {string|string[]} options.message Conteúdo do modal (string ou lista de mensagens). Arrays são unidos com \n
+ * @param {('info'|'success'|'error')} [options.type='info'] Tipo semântico do modal (pode ser usado para estilizar)
+ * @param {boolean} [options.showConfirm=true] Exibir botão Confirmar
+ * @param {string} [options.confirmText='Confirmar'] Texto do botão Confirmar
+ * @param {Function} [options.onConfirm] Callback executado ao confirmar
+ * @param {boolean} [options.showCancel=true] Exibir botão Cancelar
+ * @param {string} [options.cancelText='Cancelar'] Texto do botão Cancelar
+ * @param {Function} [options.onCancel] Callback executado ao cancelar
+ * @param {Object|string} [options.backendError] Objeto/JSON de erro do backend ou string de erro
+ */
+function showModal(options) {
+    const {
+        title,
+        message,
+        type = 'info',
+        showConfirm = true,
+        confirmText = 'Confirmar',
+        onConfirm,
+        showCancel = true,
+        cancelText = 'Cancelar',
+        onCancel,
+        backendError
+    } = options || {};
+
+    // Elementos do modal (estrutura já existente no HTML)
+    const modalEl = document.getElementById('exampleModalLong');
+    const myModal = new bootstrap.Modal(modalEl);
+    const tituloModal = document.getElementById('exampleModalLongTitle');
+    const botaoConfirmar = document.getElementById('botaoConfirmar');
+    const botaoCancelar = document.getElementById('botaoCancelar');
+    const corpo = document.getElementById('DadosAqui');
+
+    // Converte lista de mensagens para texto
+    const normalizedMessage = Array.isArray(message) ? message.join('\n') : (message || '');
+
+    // Se veio erro do backend, prioriza sua renderização no corpo
+    let backendMsg = '';
+    if (backendError) {
+        try {
+            if (typeof backendError === 'string') {
+                backendMsg = backendError;
+            } else if (backendError.error) {
+                backendMsg = backendError.error;
+            } else if (backendError.message) {
+                backendMsg = backendError.message;
+            } else {
+                backendMsg = JSON.stringify(backendError);
+            }
+        } catch (_) {
+            backendMsg = '';
+        }
+    }
+
+    // Título
+    tituloModal.textContent = title || '';
+
+    // Corpo do modal: mensagem principal ou possível mensagem do backend
+    corpo.textContent = backendMsg || normalizedMessage;
+
+    // Estado e rótulos dos botões
+    botaoConfirmar.style.display = showConfirm ? 'inline-block' : 'none';
+    botaoConfirmar.disabled = !showConfirm;
+    botaoConfirmar.textContent = confirmText;
+
+    botaoCancelar.style.display = showCancel ? 'inline-block' : 'none';
+    botaoCancelar.disabled = !showCancel;
+    botaoCancelar.textContent = cancelText;
+
+    // Remove listeners anteriores para evitar múltiplos disparos
+    botaoConfirmar.replaceWith(botaoConfirmar.cloneNode(true));
+    botaoCancelar.replaceWith(botaoCancelar.cloneNode(true));
+    const novoConfirmar = document.getElementById('botaoConfirmar');
+    const novoCancelar = document.getElementById('botaoCancelar');
+
+    if (showConfirm && typeof onConfirm === 'function') {
+        novoConfirmar.addEventListener('click', onConfirm, { once: true });
+    }
+    if (showCancel && typeof onCancel === 'function') {
+        novoCancelar.addEventListener('click', onCancel, { once: true });
+    }
+
+    // Exibe o modal
+    myModal.show();
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     parametros = await ParamentroURL(); // aguarda a função assíncrona
@@ -52,74 +140,52 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const response = await fetch(url);
         const data = await response.json();
-        
+
         // Verificação de segurança mais completa
         campos = data?.data?.fields;
         console.log(campos)
         //Verfica se o dado campos é não nulo
         if (!campos) {
-
-            // 🔻 Modal de erro
-            const modal = document.getElementById('exampleModalLong');
-            const myModal = new bootstrap.Modal(modal);
-            const botaoEnviar = document.getElementById("botaoConfirmar");
-            const botaoRemover = document.getElementById("botaoCancelar");
-
-            const tituloModal = document.getElementById("exampleModalLongTitle");
-
-            tituloModal.textContent = "Erro de conexão";
-
-
-            document.getElementById("DadosAqui").textContent = `Por favor, Recarregue a Pagina e tente novamente.
-        Caso o erro persista contate o email: contato@aiesec.org.br`;
-            botaoEnviar.style.display = 'none';
-            botaoEnviar.disabled = true;
-            botaoRemover.textContent = "Recarregar";
-
-            myModal.show();
+            // 🔻 Modal de erro (agora via função reutilizável)
+            showModal({
+                title: "Erro de conexão",
+                message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
+                type: "error",
+                showConfirm: false,
+                showCancel: true,
+                cancelText: "Recarregar",
+                onCancel: () => {
+                    document.getElementById("meuForm").reset();
+                    location.reload();
+                }
+            });
 
             console.error("A comunicação não foi corretamente estabelecida. Recarregue a página");
-
-            botaoRemover.addEventListener("click", () => {
-                document.getElementById("meuForm").reset();
-                location.reload();
-            }, { once: true });
         }
         // aqui você já pode chamar funções que dependem dos parâmetros
-        criarCampos(parametros.tipoIntercambio, parametros.cl, parametros.anuncio, parametros.rota);
+        criarCampos(parametros.cl);
 
         preencherDropdown(parametros);
     } catch (error) {
-        // 🔻 Modal de erro
-        const modal = document.getElementById('exampleModalLong');
-        const myModal = new bootstrap.Modal(modal);
-        const botaoEnviar = document.getElementById("botaoConfirmar");
-        const botaoRemover = document.getElementById("botaoCancelar");
-
-        const tituloModal = document.getElementById("exampleModalLongTitle");
-
-        tituloModal.textContent = "Erro de conexão";
-
-
-        document.getElementById("DadosAqui").textContent = `Por favor, Recarregue a Pagina e tente novamente.
-    Caso o erro persista contate o email: contato@aiesec.org.br`;
-        botaoEnviar.style.display = 'none';
-        botaoEnviar.disabled = true;
-        botaoRemover.textContent = "Recarregar";
-
-        myModal.show();
-
+        // 🔻 Modal de erro (via função reutilizável)
+        showModal({
+            title: "Erro de conexão",
+            message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
+            type: "error",
+            showConfirm: false,
+            showCancel: true,
+            cancelText: "Recarregar",
+            onCancel: () => {
+                document.getElementById("meuForm").reset();
+                location.reload();
+            }
+        });
         console.error("A comunicação não foi corretamente estabelecida. Recarregue a página");
-
-        botaoRemover.addEventListener("click", () => {
-            document.getElementById("meuForm").reset();
-            location.reload();
-        }, { once: true });
         console.error('Erro ao buscar dados:', error);
     }
 });
 //---------------------Criar campo se não vinher parâmtro------------------
-function criarCampos(programa, cl, anuncio, rota) {
+function criarCampos(cl) {
     const aiesec = document.getElementById("aiesecs");
 
     if (!cl) {
@@ -488,7 +554,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
     const camposErro = [];
 
     // Nome e sobrenome
-    ['nome', 'sobrenome'].forEach(id => {
+    ['nome'].forEach(id => {
         const input = document.getElementById(id);
         const regex = /^[A-Za-zÀ-ÿ\s]+$/;
         if (!regex.test(input.value.trim())) {
@@ -632,120 +698,87 @@ AIESEC: ${aiesecProxima.options[aiesecProxima.selectedIndex].textContent}`;
 Aceitou Política: Sim`;
 
 
-        // Mostra os dados no Modal
-        const modal = document.getElementById('exampleModalLong');
-        const myModal = new bootstrap.Modal(modal);
-        const botaoConfirmar = document.getElementById("botaoConfirmar");
-        const botaoRemover = document.getElementById("botaoCancelar");
+        // Mostra os dados no Modal (via função reutilizável)
+        showModal({
+            title: "Confirmar dados",
+            message: dados,
+            type: "info",
+            showConfirm: true,
+            confirmText: "Confirmar",
+            showCancel: true,
+            cancelText: "Cancelar",
+            onConfirm: async () => {
+                mostrarSpinner();
+                try {
+                    const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-card-psel", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            nome,
+                            emails: emailsEnvio,
+                            telefones: telefonesEnvio,
+                            dataNascimento: inputISO.value,
+                            idComite: idCL[0],
+                            idAutorizacao: "1",
+                            tag: slugify(parametros.campanha)
+                        }),
+                    });
+                    if (!response.ok) {
+                        let backend = null;
+                        try { backend = await response.json(); } catch (_) { backend = null; }
+                        throw { status: response.status, backend };
+                    }
 
-        // 🔹 Restaura o estado padrão dos botões caso tenha havido erro antes
-        botaoConfirmar.style.display = 'inline-block';
-        botaoConfirmar.disabled = false;
-        botaoConfirmar.textContent = "Confirmar";
-        botaoRemover.textContent = "Cancelar";
+                    esconderSpinner();
 
-        document.getElementById("DadosAqui").textContent = dados;
-        myModal.show();
+                    // Modal de sucesso
+                    showModal({
+                        title: "Dados enviados com sucesso!",
+                        message: "Em alguns instantes chegará em no e-mail informado nosso fit cultural",
+                        type: "success",
+                        showCancel: false,
+                        confirmText: "Ok",
+                        onConfirm: () => {
+                            document.getElementById("meuForm").reset();
+                            location.reload();
+                        }
+                    });
 
-        // Remove listener antigo e adiciona o novo
-        botaoConfirmar.replaceWith(botaoConfirmar.cloneNode(true));
-        const novoBotaoConfirmar = document.getElementById("botaoConfirmar");
+                } catch (err) {
+                    esconderSpinner();
 
-        novoBotaoConfirmar.addEventListener("click", async function handleSubmit(e) {
-            e.preventDefault();
-            mostrarSpinner();
+                    // Fecha modal de confirmação atual antes de abrir modal de erro
+                    const modalEl = document.getElementById('exampleModalLong');
+                    const myModal = bootstrap.Modal.getInstance(modalEl);
+                    if (myModal) myModal.hide();
 
-            try {
-                const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-cardooo", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nome,
-                        emails: emailsEnvio,
-                        telefones: telefonesEnvio,
-                        dataNascimento: inputISO.value,
-                        idComite: idCL[0],
-                        idAutorizacao: "1",
-                        tag: slugify(parametros.campanha)
-                    }),
-                });
-
-                if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
-
-                esconderSpinner();
-
-                const tituloModal = document.getElementById("exampleModalLongTitle");
-                const botaoFechar = document.getElementById("botaoFechar");
-
-                botaoRemover.style.display = "none";
-                tituloModal.textContent = "Dados enviados com sucesso!";
-                document.getElementById("DadosAqui").textContent = "Entraremos em contato em breve!";
-                novoBotaoConfirmar.textContent = "Ok";
-
-                const botaoLimpo = novoBotaoConfirmar.cloneNode(true);
-                novoBotaoConfirmar.parentNode.replaceChild(botaoLimpo, novoBotaoConfirmar);
-
-                botaoLimpo.addEventListener("click", () => {
-                    document.getElementById("meuForm").reset();
-                    location.reload();
-                });
-
-                botaoFechar.addEventListener("click", () => {
-                    document.getElementById("meuForm").reset();
-                    location.reload();
-                }, { once: true });
-
-            } catch (erro) {
-                console.error("Erro ao enviar dados:", erro);
-                esconderSpinner();
-                // 🔻 Modal de erro
-                const modal = document.getElementById('exampleModalLong');
-                const myModal = new bootstrap.Modal(modal);
-                const botaoEnviar = document.getElementById("botaoConfirmar");
-                const botaoRemover = document.getElementById("botaoCancelar");
-
-                const tituloModal = document.getElementById("exampleModalLongTitle");
-
-                tituloModal.textContent = "Falha ao Enviar";
-
-
-                document.getElementById("DadosAqui").textContent = `Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br`;
-
-
-                botaoEnviar.style.display = 'none';
-                botaoEnviar.disabled = true;
-                botaoRemover.textContent = "Recarregar";
-
-                myModal.show();
-
-                botaoRemover.addEventListener("click", () => {
-                    document.getElementById("meuForm").reset();
-                    location.reload();
-                }, { once: true });
+                    // Modal de erro separado
+                    showModal({
+                        title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
+                        message: !(err?.status && err.status === 400) ?"Por favor, tente novamente.\nCaso o erro persista, contate o email: contato@aiesec.org.br" : "",
+                        type: "error",
+                        showConfirm: false,
+                        showCancel: true,
+                        cancelText: err?.status && err.status === 400 ? "Corrigir" : "Recarregar",
+                        backendError: err?.backend,
+                        onCancel: !(err?.status && err.status === 400) ? () => {
+                            document.getElementById("meuForm").reset();
+                            location.reload();
+                        } : undefined
+                    });
+                }
             }
-        });
-
+        })
     } else {
-        // 🔻 Modal de erro
-        const modal = document.getElementById('exampleModalLong');
-        const myModal = new bootstrap.Modal(modal);
-        const botaoEnviar = document.getElementById("botaoConfirmar");
-        const botaoRemover = document.getElementById("botaoCancelar");
-
-        const tituloModal = document.getElementById("exampleModalLongTitle");
-
-        tituloModal.textContent = "Dados incorretos.";
-
-
-        document.getElementById("DadosAqui").textContent = `Por favor, corrija os erros e tente novamente.
-
-        ${camposErro.map(campo => `- ${campo}`).join('\n')}`;
-
-        botaoEnviar.style.display = 'none';
-        botaoEnviar.disabled = true;
-        botaoRemover.textContent = "Corrigir";
-
-        myModal.show();
+        // 🔻 Modal de erro (via função reutilizável)
+        showModal({
+            title: "Dados incorretos.",
+            message: `Por favor, corrija os erros e tente novamente.\n\n${camposErro.map(campo => `- ${campo}`).join('\n')}`,
+            type: "error",
+            showConfirm: false,
+            showCancel: true,
+            cancelText: "Corrigir"
+        });
     }
 
 });
@@ -788,7 +821,7 @@ function mostrarSpinner() {
 
     // Cria o texto de carregamento
     const texto = document.createElement('p');
-    texto.textContent = 'Enviando dados, aguarde...';
+    texto.textContent = 'Enviando dados, aguarde um instante...';
     texto.style.color = '#000';
     texto.style.marginTop = '15px';
     texto.style.fontSize = '1.1rem';
