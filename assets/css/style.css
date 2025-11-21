@@ -27,9 +27,6 @@ body {
     padding: 30px;
     /* espaçamento interno geral */
     border-radius: 12px;
-    /* cantos arredondados para o container */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    /* leve sombra para destaque */
 }
 
 /* Título (caso utilizado no HTML) */
@@ -218,7 +215,7 @@ label {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    color: #000;
+    color: #f8f9fa;
     font-weight: 500;
 }
 
@@ -376,7 +373,7 @@ button.loading::after {
     position: relative;
     left: 33%;
     margin-top: 50px;
-    color: #102e4e;
+    color: #f8f9fa;
     font-weight: 500;
 }
 
