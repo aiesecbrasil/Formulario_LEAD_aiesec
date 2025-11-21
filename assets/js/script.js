@@ -1,5 +1,28 @@
+/*
+ * ----------------------------------------------------------------------------
+ * Arquivo: assets/js/script.js
+ * Objetivo: Lógica de UI e validação do formulário do LEAD AIESEC.
+ * Descrição:
+ *  - Renderização dinâmica de campos (e-mail/telefone) com tradução de tipos
+ *  - Validações de campos (nome, e-mail, telefone, data)
+ *  - Integração com serviço externo para metadados e envio de dados
+ *  - Interações de UI: Modal padronizado, spinner de carregamento, calendário (Pikaday)
+ *  - Suporte a parâmetros de URL (campanha e CL)
+ * Convenções de documentação:
+ *  - Docstrings em JSDoc (/** ... *//*) para funções com @param, @returns, @throws quando aplicável
+ *  - Comentários adicionais de contexto em blocos e linhas
+ * Observações importantes:
+ *  - Lógica original preservada. Apenas comentários/docstrings foram adicionados.
+ *  - Este arquivo assume que os elementos de UI (modal, inputs, etc.) existem no HTML.
+ *  - Requer Bootstrap (modal), Pikaday (calendário) e um ambiente de navegador.
+ * ----------------------------------------------------------------------------
+ */
+
+// Containers dos campos dinâmicos de contato
 const containerTelefone = document.getElementById('telefones-container');
 const containerEmail = document.getElementById('emails-container');
+
+// Lista de siglas dos escritórios (comitês locais) na ordem usada pelo backend
 const escritorios = [
     "AB",  // ABC
     "AJ",  // ARACAJU
@@ -28,14 +51,29 @@ const escritorios = [
     "VT",  // VITÓRIA
     "MC" // BRASIL (NACIONAL)
 ];
+
+// Armazena o id do comitê local selecionado para envio
 const idCL = [];
+
+// Repositório de nomes de campos com erro na validação final
 const camposErro = [];
+
+// Metadados de campos recebidos do backend (preenchidos após o fetch)
 let campos;
+
+// Índice do CL dentro de 'escritorios' (calculado por parâmetro de URL)
 let indiceSiglaCL;
+
+// Parâmetros de URL processados em objeto ({ cl, campanha })
 let parametros;
+
+// Referência ao select de "AIESEC mais próxima" quando existente
 let aiesecProxima;
+
+// Lista de AIESECs ativas trazidas do backend
 let todasAiesecs;
 
+// Inicializa os containers vazios
 containerEmail.innerHTML = '';
 containerTelefone.innerHTML = '';
 
@@ -46,8 +84,8 @@ containerTelefone.innerHTML = '';
  * - Mantém compatibilidade com os usos anteriores no código
  *
  * @param {Object} options Configurações do modal
- * @param {string} options.title Título do modal
- * @param {string|string[]} options.message Conteúdo do modal (string ou lista de mensagens). Arrays são unidos com \n
+ * @param {string} [options.title] Título do modal
+ * @param {string|string[]} [options.message] Conteúdo do modal (string ou lista de mensagens). Arrays são unidos com \n
  * @param {('info'|'success'|'error')} [options.type='info'] Tipo semântico do modal (pode ser usado para estilizar)
  * @param {boolean} [options.showConfirm=true] Exibir botão Confirmar
  * @param {string} [options.confirmText='Confirmar'] Texto do botão Confirmar
@@ -56,6 +94,7 @@ containerTelefone.innerHTML = '';
  * @param {string} [options.cancelText='Cancelar'] Texto do botão Cancelar
  * @param {Function} [options.onCancel] Callback executado ao cancelar
  * @param {Object|string} [options.backendError] Objeto/JSON de erro do backend ou string de erro
+ * @returns {void}
  */
 function showModal(options) {
     const {
@@ -132,21 +171,27 @@ function showModal(options) {
     myModal.show();
 }
 
+// ---------------------------------------------------------------------------
+// Bootstrap de página: carrega metadados e prepara UI após DOM pronto
+// ---------------------------------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", async () => {
-    parametros = await ParamentroURL(); // aguarda a função assíncrona
+    // Aguarda leitura de parâmetros de URL
+    parametros = await ParamentroURL();
     const url = 'https://baziaiesec.pythonanywhere.com/metadados-card-psel';
 
     try {
-
+        // Busca metadados para construção dinâmica de campos
         const response = await fetch(url);
         const data = await response.json();
 
         // Verificação de segurança mais completa
         campos = data?.data?.fields;
-        console.log(campos)
-        //Verfica se o dado campos é não nulo
+        console.log(campos);
+
+        // Verfica se o dado campos é não nulo
         if (!campos) {
-            // 🔻 Modal de erro (agora via função reutilizável)
+            // Modal de erro (centralizado via função reutilizável)
             showModal({
                 title: "Erro de conexão",
                 message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
@@ -164,10 +209,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         // aqui você já pode chamar funções que dependem dos parâmetros
         criarCampos(parametros.cl);
-
         preencherDropdown(parametros);
     } catch (error) {
-        // 🔻 Modal de erro (via função reutilizável)
+        // Modal de erro em caso de falha de rede/parse
         showModal({
             title: "Erro de conexão",
             message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
@@ -184,7 +228,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error('Erro ao buscar dados:', error);
     }
 });
-//---------------------Criar campo se não vinher parâmtro------------------
+
+// ---------------------Criar campo se não vinher parâmtro------------------
+/**
+ * Cria o campo de seleção de "AIESEC mais próxima" quando nenhum CL é informado via URL.
+ * - Constrói o select desabilitado enquanto carrega
+ * - Popula as opções com base nos metadados de "AIESEC mais próxima"
+ * - Seleciona automaticamente a opção conforme o índice do CL (quando aplicável)
+ *
+ * Observação: Esta função depende de 'campos' já populado via fetch.
+ *
+ * @param {string} cl Sigla do comitê local (por exemplo: "RJ"). Se ausente, cria o select na página.
+ * @returns {void}
+ */
 function criarCampos(cl) {
     const aiesec = document.getElementById("aiesecs");
 
@@ -196,13 +252,13 @@ function criarCampos(cl) {
                     <option value>Carregando...</option>
                 </select>
                 <div class="error-msg" id="erro-aiesec"></div>
-        `
+        `;
         //__________________________________BOTÃO AIESEC MAIS PRÓXIMA_______________________________________
 
         // Cria o menu suspenso
         const dropdown_AiesecProx = document.getElementById('aiesec');
         dropdown_AiesecProx.innerHTML = '';
-        dropdown_AiesecProx.setAttribute("disabled", "")
+        dropdown_AiesecProx.setAttribute("disabled", "");
 
         // Cria um botão com a frase "Carregando" enquanto o Menu Suspenso está desativado
         const defaultOption_AiesecProx = document.createElement('option');
@@ -220,7 +276,6 @@ function criarCampos(cl) {
         const aiesecProx = campos.find(field => field.label === "AIESEC mais próxima");
         const aiesecs = aiesecProx.config.settings.options;
 
-
         todasAiesecs = aiesecs.reduce(
             function (prev, curr) {
 
@@ -228,14 +283,13 @@ function criarCampos(cl) {
                     return [...prev, { id: curr.id, text: curr.text }];
                 }
 
-                return [...prev]
+                return [...prev];
 
             },
             []
-        )
+        );
 
         indiceSiglaCL = escritorios.indexOf(cl);
-
 
         todasAiesecs.forEach((aiesec, index) => {
             const newOption = document.createElement('option');
@@ -253,14 +307,19 @@ function criarCampos(cl) {
         defaultOption_AiesecProx.textContent = "Selecione";
         dropdown_AiesecProx.removeAttribute("disabled");
 
-
         //________________________________________________________________________________________________
-
-
     }
 }
 
 // -------------------- Máscara e validação de telefone --------------------
+/**
+ * Aplica máscara de telefone ao input no padrão brasileiro: (DD) 9 XXXX-XXXX.
+ * - Impede entrada de caracteres não numéricos
+ * - Formata dinamicamente conforme o usuário digita
+ *
+ * @param {HTMLInputElement} input Campo de input (type="tel") ao qual a máscara será aplicada
+ * @returns {void}
+ */
 function aplicarMascaraTelefone(input) {
     input.addEventListener('input', function (e) {
         let valor = e.target.value.replace(/\D/g, ''); // remove tudo que não for número
@@ -285,12 +344,17 @@ function aplicarMascaraTelefone(input) {
     });
 }
 
-// Função para remover a máscara e deixar só números
+/**
+ * Remove a máscara do telefone, retornando apenas dígitos.
+ *
+ * @param {string} valorFormatado Telefone possivelmente formatado como (DD) 9 XXXX-XXXX
+ * @returns {string} Apenas números (ex.: "11987654321")
+ */
 function limparTelefoneFormatado(valorFormatado) {
     return valorFormatado.replace(/\D/g, ''); // remove tudo que não for número
 }
 
-// Exemplo de uso no envio do formulário
+// Exemplo de uso no envio do formulário (listener preliminar)
 document.getElementById('meuForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -304,8 +368,13 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
     // this.submit();
 });
 
-
-
+/**
+ * Aplica validação de telefone ao perder foco (blur) no padrão (DD) 9 XXXX-XXXX.
+ * - Exibe mensagem de erro no elemento #erro-telefone
+ *
+ * @param {HTMLInputElement} input Campo de telefone a ser validado
+ * @returns {void}
+ */
 function aplicarValidacaoTelefone(input) {
     input.addEventListener('blur', function (e) {
         const valor = e.target.value.trim();
@@ -314,15 +383,22 @@ function aplicarValidacaoTelefone(input) {
 
         if (!regex.test(valor)) {
             erro.textContent = "Telefone inválido. Use o formato (DD) 9 XXXX-XXXX";
-            camposErro.push("Telefone Inválido")
+            camposErro.push("Telefone Inválido");
         } else {
             erro.textContent = "";
         }
     });
 }
 
-
 // -------------------- Validação de e-mail --------------------
+/**
+ * Valida formato de e-mail ao perder foco, exibindo mensagem em #erro-email.
+ * - Formato: local@dominio.tld (com tld >= 2)
+ * - Não valida domínio/provedores específicos (ver trecho comentado para provedores comuns)
+ *
+ * @param {HTMLInputElement} input Campo de e-mail (type="email")
+ * @returns {void}
+ */
 function validarEmailComProvedor(input) {
     input.addEventListener('blur', function (e) {
         const valor = e.target.value.trim();
@@ -335,19 +411,28 @@ function validarEmailComProvedor(input) {
             return;
         }
 
-        /*// Lista de provedores conhecidos
+        /* // Lista de provedores conhecidos
         const provedores = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'icloud.com'];
         const dominio = valor.split('@')[1].toLowerCase();
 
         if (!provedores.includes(dominio)) {
             erro.textContent = "Por favor, use um e-mail de provedor comum (ex: gmail.com, hotmail.com, icloud.com, outlook.com)";
-            camposErro.push("Use um e-mail de provedor comum \n (ex: gmail.com, hotmail.com, icloud.com, hotmail.com)")
+            camposErro.push("Use um e-mail de provedor comum \n (ex: gmail.com, hotmail.com, icloud.com, hotmail.com)");
         } else {
             erro.textContent = ""; // Tudo certo
-        }*/
+        } */
     });
 }
+
 // -------------------- Validação de nome/sobrenome --------------------
+/**
+ * Anexa validação por regex ao input especificado, exibindo a mensagem no elemento de erro indicado.
+ * - Aceita apenas letras (incluindo acentuadas) e espaços
+ *
+ * @param {string} id ID do input de texto a validar (ex.: 'nome')
+ * @param {string} erroId ID do elemento onde mensagens de erro serão exibidas
+ * @returns {void}
+ */
 function validarNome(id, erroId) {
     const input = document.getElementById(id);
     const erro = document.getElementById(erroId);
@@ -361,11 +446,14 @@ function validarNome(id, erroId) {
     });
 }
 
+// Validação inicial do campo nome
 validarNome('nome', 'erro-nome');
 
 // -------------------- Aplicar validações iniciais --------------------
+// Varrendo inputs iniciais renderizados no HTML para aplicar validadores
+// (Em campos adicionados dinamicamente, as funções são chamadas nos adders)
 document.querySelectorAll('input[name="email[]"]').forEach(input => {
-    validarEmailComProvedor(input)
+    validarEmailComProvedor(input);
 });
 document.querySelectorAll('input[name="telefone[]"]').forEach(input => {
     aplicarMascaraTelefone(input);
@@ -373,6 +461,17 @@ document.querySelectorAll('input[name="telefone[]"]').forEach(input => {
 });
 
 // -------------------- Adicionar/Remover campos --------------------
+/**
+ * Cria dinamicamente um grupo de campos de e-mail (tipo + e-mail) e o adiciona ao container.
+ * - Traduz os tipos via dicionário local
+ * - Anexa validação de e-mail no input criado
+ * - Gerencia o estado dos botões de remoção
+ * - Emite postMessage para o parent (ajuste de iframe, se existir)
+ *
+ * Dependências: 'campos' populado com metadados do backend.
+ *
+ * @returns {Promise<void>} Promessa resolvida após inserir e preparar o campo
+ */
 async function addEmail() {
 
     const div = document.createElement('div');
@@ -412,7 +511,17 @@ async function addEmail() {
     window.parent.postMessage('campoAdicionado', 'https://aiesec.org.br/');
 }
 
-
+/**
+ * Cria dinamicamente um grupo de telefone (tipo + número), aplicando máscara e validação.
+ * - Traduz os tipos via dicionário local
+ * - Aplica máscara/validação ao input criado
+ * - Gerencia o estado dos botões de remoção
+ * - Emite postMessage ao parent
+ *
+ * Dependências: 'campos' populado com metadados do backend.
+ *
+ * @returns {Promise<void>} Promessa resolvida após inserir e preparar o campo
+ */
 async function addTelefone() {
 
     const div = document.createElement('div');
@@ -457,6 +566,16 @@ async function addTelefone() {
     window.parent.postMessage('campoAdicionado', 'https://aiesec.org.br/');
 }
 
+/**
+ * Remove um grupo de campo (e-mail/telefone) do container respectivo.
+ * - Mantém sempre pelo menos um campo no container
+ * - Desabilita o botão de remoção quando resta apenas um
+ * - Emite postMessage ao parent para ajuste (se necessário)
+ *
+ * @param {HTMLButtonElement} botao Botão "✖" clicado
+ * @param {('email'|'telefone')} tipo Tipo de campo a remover
+ * @returns {void}
+ */
 function removeCampo(botao, tipo) {
     const container = tipo === 'email'
         ? document.getElementById('emails-container')
@@ -482,6 +601,15 @@ function removeCampo(botao, tipo) {
 const inputVisivel = document.getElementById('nascimento'); // mostra DD/MM/YYYY
 const inputISO = document.getElementById('nascimento-iso'); // armazena YYYY-MM-DD 00:00:00
 
+/**
+ * Define a data escolhida nos inputs de data (visível e oculto) e sincroniza o calendário.
+ * - Formata o input visível como DD/MM/YYYY
+ * - Formata o input oculto como YYYY-MM-DD 00:00:00
+ * - Atualiza o Pikaday sem disparar loops
+ *
+ * @param {Date} date Instância de Date válida
+ * @returns {void}
+ */
 function setDate(date) {
     if (date instanceof Date && !isNaN(date)) {
         // Formato brasileiro no input visível
@@ -499,6 +627,12 @@ function setDate(date) {
 }
 
 // Inicializa Pikaday
+/**
+ * Instância do Pikaday para o campo de nascimento.
+ * - Localização PT-BR
+ * - Intervalo de anos [1900, ano atual]
+ * - Conversão toString/parse compatível com DD/MM/YYYY
+ */
 const picker = new Pikaday({
     field: inputVisivel,
     format: 'DD/MM/YYYY',
@@ -524,6 +658,8 @@ const picker = new Pikaday({
 });
 
 // Atualização manual pelo input
+// - Mantém a máscara de data enquanto o usuário digita
+// - Quando completo, sincroniza com o calendário e o campo ISO
 inputVisivel.addEventListener('input', () => {
     let valor = inputVisivel.value.replace(/\D/g, ''); // remove tudo que não for número
 
@@ -548,6 +684,12 @@ inputVisivel.addEventListener('input', () => {
 
 
 // -------------------- Validação geral no envio --------------------
+/**
+ * Handler principal de envio do formulário com validações encadeadas.
+ * - Valida nome, e-mails, telefones, data, AIESEC (quando presente) e aceite de política
+ * - Em caso de sucesso, mostra um modal para confirmação e, se confirmado, envia os dados ao backend
+ * - Em caso de erro, exibe modal com lista de campos incorretos
+ */
 document.getElementById('meuForm').addEventListener('submit', function (e) {
     e.preventDefault();
     let valido = true;
@@ -560,7 +702,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
         if (!regex.test(input.value.trim())) {
             document.getElementById('erro-' + id).textContent = "Campo inválido.";
             valido = false;
-            camposErro.push(`${id} Inválido`)
+            camposErro.push(`${id} Inválido`);
         } else {
             document.getElementById('erro-' + id).textContent = "";
         }
@@ -599,7 +741,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
         if (!regex.test(valor)) {
             erro.textContent = "Telefone inválido. Use o formato (DD) 9 XXXX-XXXX";
             valido = false;
-            camposErro.push("Telefone Inválido")
+            camposErro.push("Telefone Inválido");
         } else {
             erro.textContent = "";
         }
@@ -609,7 +751,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
     if (!inputISO.value) {
         document.getElementById('erro-nascimento').textContent = "Data inválida.";
         valido = false;
-        camposErro.push("Data Inválida")
+        camposErro.push("Data Inválida");
     } else {
         document.getElementById('erro-nascimento').textContent = "";
     }
@@ -637,7 +779,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
     if (!document.getElementById('politica').checked) {
         document.getElementById('erro-politica').textContent = "Você deve aceitar.";
         valido = false;
-        camposErro.push("você de aceitas o termo")
+        camposErro.push("você de aceitas o termo");
     } else {
         document.getElementById('erro-politica').textContent = "";
     }
@@ -696,7 +838,6 @@ AIESEC: ${aiesecProxima.options[aiesecProxima.selectedIndex].textContent}`;
         dados += `
 
 Aceitou Política: Sim`;
-
 
         // Mostra os dados no Modal (via função reutilizável)
         showModal({
@@ -768,9 +909,9 @@ Aceitou Política: Sim`;
                     });
                 }
             }
-        })
+        });
     } else {
-        // 🔻 Modal de erro (via função reutilizável)
+        // Modal de erro (via função reutilizável)
         showModal({
             title: "Dados incorretos.",
             message: `Por favor, corrija os erros e tente novamente.\n\n${camposErro.map(campo => `- ${campo}`).join('\n')}`,
@@ -793,6 +934,8 @@ Aceitou Política: Sim`;
  * - Cria dinamicamente o elemento HTML do spinner (não precisa existir no HTML).
  * - Bloqueia a interação com o fundo (usando overlay sem interferir no Bootstrap).
  * - Pode ser reutilizado em qualquer parte do código.
+ *
+ * @returns {void}
  */
 function mostrarSpinner() {
     // Verifica se já existe um spinner ativo para evitar duplicação
@@ -839,14 +982,23 @@ function mostrarSpinner() {
  * Remove o spinner da tela, caso esteja visível.
  * 
  * - É seguro chamar várias vezes (faz checagem antes de remover).
+ *
+ * @returns {void}
  */
 function esconderSpinner() {
     const overlay = document.getElementById('spinner-overlay');
     if (overlay) overlay.remove();
 }
 
-
-// Função genérica para traduzir palavras usando LibreTranslate
+// -------------------- Utilitário de tradução --------------------
+/**
+ * Traduz uma lista de palavras usando dicionário interno simples.
+ * - Mantém fallback para termos desconhecidos (retorna o próprio termo)
+ * - Faz pequenas heurísticas (fax, phone)
+ *
+ * @param {string[]} palavras Lista de palavras a traduzir
+ * @returns {{ original: string, traduzido: string }[]} Mapeamento original/traduzido para cada palavra
+ */
 async function traduzirPalavras(palavras) {
     // 1. Tabela interna de termos comuns (manual, sem JSON externo)
     const dicionarioBase = {
@@ -876,12 +1028,17 @@ async function traduzirPalavras(palavras) {
     return traducao;
 }
 
-
-
+/**
+ * Preenche campos dinâmicos iniciais (e-mail/telefone) e resolve CL quando veio via URL.
+ * - Quando 'parametros.cl' existe, calcula o índice e mapeia o id do comitê local ativo
+ * - Em seguida, adiciona um campo de e-mail e um de telefone por padrão
+ *
+ * @param {{ cl?: string, campanha?: string }} parametros Objeto com parâmetros de URL processados
+ * @returns {Promise<void>}
+ */
 async function preencherDropdown(parametros) {
     if (parametros.cl) {
         indiceSiglaCL = escritorios.indexOf(parametros.cl);
-
 
         todasAiesecs = campos.find(field => field.label === "AIESEC mais próxima").config.settings.options.filter(opcoes => opcoes.status == "active");
         idCL = todasAiesecs.filter((_, index) => index === indiceSiglaCL).map(i => i.id);
@@ -891,6 +1048,13 @@ async function preencherDropdown(parametros) {
     addTelefone();
 }
 
+/**
+ * Lê parâmetros da URL relevantes para o formulário.
+ * - utm_term -> CL (normalizado para maiúsculas)
+ * - utm_campaign -> campanha (decodificada)
+ *
+ * @returns {Promise<{ cl: string, campanha: string }>} Objeto de parâmetros
+ */
 async function ParamentroURL() {
     const params = new URLSearchParams(window.location.search);
     const cl = (params.get("utm_term") || "").toUpperCase();
@@ -900,6 +1064,14 @@ async function ParamentroURL() {
         campanha
     };
 }
+
+/**
+ * Converte um texto em um slug seguro para uso em tags ou URLs.
+ * - Minúsculas, sem acentos, espaços viram hífens, mantém hífens e barras simples
+ *
+ * @param {string} texto Texto de entrada
+ * @returns {string} Slug normalizado
+ */
 function slugify(texto) {
     return texto
         .toLowerCase()                       // tudo minúsculo
@@ -911,5 +1083,3 @@ function slugify(texto) {
         .replace(/\/+/g, "/")                // evita múltiplas barras
         .replace(/^[-/]+|[-/]+$/g, "");      // remove hífens ou barras no início/fim
 }
-
-

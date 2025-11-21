@@ -1,125 +1,211 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <!--
+      --------------------------------------------------------------------------
+      Documento: index.html
+      Objetivo: Formulário de captação (LEAD AIESEC)
+      Descrição:
+        - Estrutura base do formulário com campos dinâmicos para e-mail e telefone
+        - Integração com Pikaday (calendário) e Bootstrap (estilos e modal)
+        - O comportamento/validações é implementado em assets/js/script.js
+      Notas:
+        - Este arquivo contém apenas marcação e comentários. A lógica está no JS.
+        - Comentários foram adicionados para orientar manutenção e integração.
+      --------------------------------------------------------------------------
+    -->
 
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-            crossorigin="anonymous">
-        <link rel="stylesheet" href="./assets/css/style.css">
-        <meta name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    </head>
+    <meta charset="UTF-8" />
+    <!-- CSS do Pikaday (calendário) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css"
+    />
 
-    <body>
-        <form id="meuForm">
+    <!-- CSS do Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
 
-            <!-- Nome -->
-            <div class="input-group">
-                <input type="text" id="nome" placeholder=" " required />
-                <label for="nome">Nome Completo *</label>
-                <span class="error-msg" id="erro-nome"></span>
-            </div>
+    <!-- Estilos específicos do formulário -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
 
-            <!-- Emails -->
-            <label>Email *</label>
-            <div id="emails-container">
-                <div class="campo-multiplo">
-                    <select name="emailTipo[]"></select>
-                    <input type="email" name="email[]" placeholder="Email" />
-                    <button type="button" class="remove-btn"
-                        onclick="removeCampo(this, 'email')">✖</button>
-                </div>
-            </div>
-            <button type="button" id="email" class="add-btn"
-                onclick="addEmail()">Adicionar
-                outro</button>
-            <div class="error-msg" id="erro-email"></div>
+    <!-- Viewport responsivo -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-            <!-- Telefones -->
-            <label>Telefone *</label>
-            <div id="telefones-container">
-                <div class="campo-multiplo">
-                    <select name="TelefoneTipo[]"></select>
-                    <input type="tel" name="telefone[]"
-                        placeholder="Telefone" />
-                    <button type="button" class="remove-btn"
-                        onclick="removeCampo(this, 'telefone')">✖</button>
-                </div>
-            </div>
-            <button type="button" class="add-btn" id="telefone"
-                onclick="addTelefone()">Adicionar outro</button>
-            <div class="error-msg" id="erro-telefone"></div>
+    <!--
+      Dica de Acessibilidade:
+      - Considere adicionar um <title> descritivo e meta description para SEO/A11y.
+    -->
+    <title>Formulário LEAD AIESEC</title>
+  </head>
 
-            <!-- Data de nascimento -->
-            <label>Data de Nascimento *</label>
-            <div class="input-calendario">
-                <input type="text" id="nascimento" placeholder="DD/MM/YYYY"
-                    maxlength="10" />
-                <span>📅</span>
-            </div>
-            <input type="hidden" id="nascimento-iso" name="nascimento" />
-            <div class="error-msg" id="erro-nascimento"></div>
-            
+  <body>
+    <!--
+      Formulário principal.
+      - O id="meuForm" é usado pelo script para bind de eventos e validações.
+      - Os campos de e-mail/telefone são dinâmicos (adicionados/removidos pelo JS).
+    -->
+    <form id="meuForm">
+      <!-- Campo: Nome completo -->
+      <div class="input-group">
+        <input type="text" id="nome" placeholder=" " required />
+        <label for="nome">Nome Completo *</label>
+        <span class="error-msg" id="erro-nome"></span>
+      </div>
 
-            <!-- AIESEC mais próxima -->
-            <div id="aiesecs" class="input-extra"></div>
-
-            <!-- Checkbox Política de Privacidade -->
-            <div class="input-extra checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="politica" name="politica"
-                        required />
-                    <span><strong>Eu concordo com a coleta e uso dos meus dados
-                            conforme a Política de Privacidade *</strong></span>
-                </label>
-                <div class="checkbox-msg">
-                    Estamos coletando seus dados para enviar informações sobre
-                    oportunidades de intercâmbio. Seus dados serão tratados
-                    conforme a LGPD e não serão compartilhados sem
-                    consentimento.
-                </div>
-                <div class="error-msg" id="erro-politica"></div>
-            </div>
-
-            <button type="submit" id="botaoSubmit">Enviar</button>
-        </form>
-        <span class="copyright">&copy; AIESEC no Brasil - 2025</span>
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModalLong" tabindex="-1"
-            aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"
-                            id="exampleModalLongTitle">Confirme seus dados:</h5>
-                        <button type="button" class="btn-close"
-                            data-bs-dismiss="modal" aria-label="Close"
-                            id="botaoFechar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <pre id="DadosAqui"></pre>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                            id="botaoCancelar">Cancelar</button>
-                        <button type="button" class="btn btn-primary"
-                            id="botaoConfirmar">Enviar</button>
-                    </div>
-                </div>
-            </div>
+      <!--
+        Bloco: E-mails
+        - O container #emails-container receberá entradas adicionais via addEmail().
+        - Cada entrada contém select de tipo e input do e-mail com botão de remoção.
+      -->
+      <label>Email *</label>
+      <div id="emails-container">
+        <div class="campo-multiplo">
+          <select name="emailTipo[]"></select>
+          <input type="email" name="email[]" placeholder="Email" />
+          <button
+            type="button"
+            class="remove-btn"
+            onclick="removeCampo(this, 'email')"
+          >
+            ✖
+          </button>
         </div>
+      </div>
+      <!-- Botão para adicionar novo e-mail -->
+      <button type="button" id="email" class="add-btn" onclick="addEmail()">
+        Adicionar outro
+      </button>
+      <div class="error-msg" id="erro-email"></div>
 
-        <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-            crossorigin="anonymous"></script>
-        <script src="./assets/js/script.js"></script>
-    </body>
+      <!--
+        Bloco: Telefones
+        - O container #telefones-container receberá entradas via addTelefone().
+        - O input terá máscara e validação aplicadas no JS.
+      -->
+      <label>Telefone *</label>
+      <div id="telefones-container">
+        <div class="campo-multiplo">
+          <!-- Observação: o nome correto do select é usado pelo JS (script corrige ao criar dinamicamente) -->
+          <select name="TelefoneTipo[]"></select>
+          <input type="tel" name="telefone[]" placeholder="Telefone" />
+          <button
+            type="button"
+            class="remove-btn"
+            onclick="removeCampo(this, 'telefone')"
+          >
+            ✖
+          </button>
+        </div>
+      </div>
+      <!-- Botão para adicionar novo telefone -->
+      <button type="button" class="add-btn" id="telefone" onclick="addTelefone()">
+        Adicionar outro
+      </button>
+      <div class="error-msg" id="erro-telefone"></div>
+
+      <!--
+        Bloco: Data de nascimento
+        - Input visível (texto) usado pelo Pikaday para exibir o calendário.
+        - Input oculto (hidden) armazena data no formato ISO esperado pelo backend.
+      -->
+      <label>Data de Nascimento *</label>
+      <div class="input-calendario">
+        <input type="text" id="nascimento" placeholder="DD/MM/YYYY" maxlength="10" />
+        <span>📅</span>
+      </div>
+      <input type="hidden" id="nascimento-iso" name="nascimento" />
+      <div class="error-msg" id="erro-nascimento"></div>
+
+      <!--
+        Bloco: AIESEC mais próxima
+        - Este container é preenchido dinamicamente quando não há parâmetro CL na URL.
+      -->
+      <div id="aiesecs" class="input-extra"></div>
+
+      <!--
+        Bloco: Aceite da Política de Privacidade
+        - Campo obrigatório (required)
+        - Mensagens são controladas pelo JS em #erro-politica
+      -->
+      <div class="input-extra checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="politica" name="politica" required />
+          <span>
+            <strong>
+              Eu concordo com a coleta e uso dos meus dados conforme a Política de Privacidade *
+            </strong>
+          </span>
+        </label>
+        <div class="checkbox-msg">
+          Estamos coletando seus dados para enviar informações sobre oportunidades de intercâmbio.
+          Seus dados serão tratados conforme a LGPD e não serão compartilhados sem consentimento.
+        </div>
+        <div class="error-msg" id="erro-politica"></div>
+      </div>
+
+      <!-- Botão de envio do formulário -->
+      <button type="submit" id="botaoSubmit">Enviar</button>
+    </form>
+
+    <!-- Rodapé simples -->
+    <span class="copyright">&copy; AIESEC no Brasil - 2025</span>
+
+    <!--
+      Modal de confirmação/feedback
+      - A estrutura é manipulada via JS (showModal) em assets/js/script.js
+      - O elemento <pre id="DadosAqui"> recebe a pré-visualização dos dados antes do envio.
+    -->
+    <div
+      class="modal fade"
+      id="exampleModalLong"
+      tabindex="-1"
+      aria-labelledby="exampleModalLongTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">
+              Confirme seus dados:
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              id="botaoFechar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <pre id="DadosAqui"></pre>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="botaoCancelar">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="botaoConfirmar">
+              Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts: bibliotecas externas e script principal -->
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./assets/js/script.js"></script>
+  </body>
 </html>
