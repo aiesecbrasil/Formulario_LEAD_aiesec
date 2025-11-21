@@ -56,7 +56,7 @@
       <!-- Campo: Nome completo -->
       <div class="input-group">
         <input type="text" id="nome" placeholder=" " required />
-        <label for="nome">Nome Completo *</label>
+        <label for="nome">Nome Completo <p class="obrigatorio">*</p></label>
         <span class="error-msg" id="erro-nome"></span>
       </div>
 
@@ -65,7 +65,7 @@
         - O container #emails-container receberá entradas adicionais via addEmail().
         - Cada entrada contém select de tipo e input do e-mail com botão de remoção.
       -->
-      <label>Email *</label>
+      <label>Email <p class="obrigatorio">*</p></label>
       <div id="emails-container">
         <div class="campo-multiplo">
           <select name="emailTipo[]"></select>
@@ -89,7 +89,7 @@
         - O container #telefones-container receberá entradas via addTelefone().
         - O input terá máscara e validação aplicadas no JS.
       -->
-      <label>Telefone *</label>
+      <label>Telefone <p class="obrigatorio">*</p></label>
       <div id="telefones-container">
         <div class="campo-multiplo">
           <!-- Observação: o nome correto do select é usado pelo JS (script corrige ao criar dinamicamente) -->
@@ -115,7 +115,7 @@
         - Input visível (texto) usado pelo Pikaday para exibir o calendário.
         - Input oculto (hidden) armazena data no formato ISO esperado pelo backend.
       -->
-      <label>Data de Nascimento *</label>
+      <label>Data de Nascimento <p class="obrigatorio">*</p></label>
       <div class="input-calendario">
         <input type="text" id="nascimento" placeholder="DD/MM/YYYY"
           maxlength="10" />
@@ -141,7 +141,7 @@
           <span>
             <strong>
               Eu concordo com a coleta e uso dos meus dados conforme a Política
-              de Privacidade *
+              de Privacidade <p class="obrigatorio">*</p>
             </strong>
           </span>
         </label>

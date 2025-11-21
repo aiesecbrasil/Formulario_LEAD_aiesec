@@ -159,7 +159,7 @@ label {
 
 /* Mensagens de erro inline abaixo dos campos */
 .error-msg {
-    color: #6b131c;
+    color: #f8f9fa;
     /* tom de vermelho escuro */
     font-size: 13px;
     margin-top: 4px;
@@ -206,6 +206,49 @@ label {
 }
 
 /* -------------------- Checkbox da Política de Privacidade -------------------- */
+/* Oculta o checkbox padrão */
+.checkbox-label input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #0d6efd;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: all .25s ease;
+    background-color: white;
+}
+
+/* Fundo azul quando marcado */
+.checkbox-label input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Ícone de check animado */
+.checkbox-label input::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+    transition: all .25s ease;
+}
+
+/* animação ao marcar */
+.checkbox-label input:checked::after {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+}
+
+/* mantém seu estilo */
 .checkbox-group {
     margin-top: 18px;
 }
@@ -219,19 +262,13 @@ label {
     font-weight: 500;
 }
 
-.checkbox-label input {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
 .checkbox-msg {
     font-size: 13px;
-    color: #434242;
+    color: #ffe8e8;
     margin: 6px 0 0 26px;
-    /* recuo para alinhar com a caixa do checkbox */
     line-height: 1.4;
 }
+
 
 /* -------------------- Ajustes no Modal (Bootstrap) -------------------- */
 .modal {
@@ -388,4 +425,11 @@ button.loading::after {
         color: #102e4e;
         font-weight: 500;
     }
+}
+
+/* -----------Extras--------*/
+
+.obrigatorio {
+    color: red;
+    display: inline;
 }

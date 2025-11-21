@@ -260,7 +260,7 @@ function criarCampos(cl) {
     if (!cl) {
         aiesec.innerHTML = `
         <label for="aiesec">Qual é a AIESEC mais próxima de você?
-                    *</label>
+                    <p class="obrigatorio">*</p></label>
                 <select id="aiesec" name="aiesec" required>
                     <option value>Carregando...</option>
                 </select>
