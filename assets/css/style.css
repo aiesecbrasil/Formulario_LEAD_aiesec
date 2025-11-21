@@ -229,8 +229,7 @@ h2 {
     text-align: center;
 }
 
-.modal-body {
-    text-indent: 30px;        /* indentação da primeira linha */
+.modal-body {       /* indentação da primeira linha */
     font-family: 'Arial', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
