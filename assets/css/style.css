@@ -230,19 +230,21 @@ h2 {
 }
 
 .modal-body {
-    text-indent: 30px;        /* indentação da primeira linha */
+    text-indent: 30px;
     font-family: 'Arial', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
     color: #000000;
     text-align: left;
     padding: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: #f8f9fa; /* cinza claro (compatível com bootstrap) */
+    background-color: #f8f9fa;
+
+    /* Garantir quebra automática */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+
 
 /* -------------------- Botão de envio do formulário -------------------- */
 button[type="submit"] {
