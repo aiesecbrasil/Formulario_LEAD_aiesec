@@ -252,7 +252,7 @@ h2 {
     word-wrap: break-word; /* Alias (legado) */
 
     /* 3. Força a quebra de strings sem espaços em qualquer caractere (Solução para o scroll) */
-    word-break: break-all; 
+    word-break: break-all !important; 
 }
 
 /* -------------------- Botão de envio do formulário -------------------- */
