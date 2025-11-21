@@ -371,6 +371,7 @@ button.loading::after {
 .copyright {
     margin: 20px;
     position: relative;
+    top:30px;
     left: 33%;
     margin-top: 50px;
     color: #f8f9fa;
