@@ -237,16 +237,18 @@ h2 {
     color: #000000;
     text-align: left;
     padding: 2rem;
-    display: block;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
     background-color: #f8f9fa; /* cinza claro (compatível com bootstrap) */
+
+    display: block;           /* importante: deixa o texto fluir naturalmente */
+
     /* Garantir quebra automática */
     white-space: normal;
-    word-wrap: break-word;
     overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    box-sizing: border-box;   /* inclui padding na largura total */
 }
+
 
 /* -------------------- Botão de envio do formulário -------------------- */
 button[type="submit"] {
