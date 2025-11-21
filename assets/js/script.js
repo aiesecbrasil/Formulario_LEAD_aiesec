@@ -875,7 +875,7 @@ Aceitou Política: Sim`;
                     // Modal de sucesso
                     showModal({
                         title: "Dados enviados com sucesso!",
-                        message: "Em alguns instantes chegará em seu e-mail,\no Link para nosso fit cultural.Caso não receba,\nverifique sua caixa de spam ou\nentre em contato com o email:contato@aiesec.org.br",
+                        message: "Em alguns instantes chegará em seu e-mail,\no Link para nosso fit cultural.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:contato@aiesec.org.br",
                         type: "success",
                         showCancel: false,
                         confirmText: "Ok",
