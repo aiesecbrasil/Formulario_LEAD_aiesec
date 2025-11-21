@@ -838,77 +838,69 @@ AIESEC: ${aiesecProxima.options[aiesecProxima.selectedIndex].textContent}`;
 
 Aceitou Política: Sim`;
 
-        // Mostra os dados no Modal (via função reutilizável)
-        showModal({
-            title: "Confirmar dados",
-            message: dados,
-            type: "info",
-            showConfirm: true,
-            confirmText: "Confirmar",
-            showCancel: true,
-            cancelText: "Cancelar",
-            onConfirm: async () => {
-                mostrarSpinner();
-                try {
-                    const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-card-psel", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            nome,
-                            emails: emailsEnvio,
-                            telefones: telefonesEnvio,
-                            dataNascimento: inputISO.value,
-                            idComite: idCL[0],
-                            idAutorizacao: "1",
-                            tag: slugify(parametros.campanha)
-                        }),
-                    });
 
-                    if (!response.ok) {
-                        let backend = null;
-                        try { backend = await response.json(); } catch (_) { backend = null; }
-                        throw { status: response.status, backend };
-                    }
+        async () => {
+            mostrarSpinner();
+            try {
+                const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-card-psel", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nome,
+                        emails: emailsEnvio,
+                        telefones: telefonesEnvio,
+                        dataNascimento: inputISO.value,
+                        idComite: idCL[0],
+                        idAutorizacao: "1",
+                        tag: slugify(parametros.campanha)
+                    }),
+                });
 
-                    esconderSpinner();
-
-                    // Modal de sucesso
-                    showModal({
-                        title: "Dados enviados com sucesso!",
-                        message: "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
-                        type: "success",
-                        showCancel: false,
-                        confirmText: "Ok",
-                        onConfirm: () => {
-                            document.getElementById("meuForm").reset();
-                            location.reload();
-                        }
-                    });
-
-                } catch (err) {
-                    esconderSpinner();
-                    // Fecha modal de confirmação atual antes de abrir modal de erro
-                    const modalEl = document.getElementById('exampleModalLong');
-                    const myModal = bootstrap.Modal.getInstance(modalEl);
-                    if (myModal) myModal.hide();
-
-                    // Modal de erro separado
-                    showModal({
-                        title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
-                        message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: mxp@aiesec.org.br" : "",
-                        type: "error",
-                        showConfirm: false,
-                        showCancel: true,
-                        cancelText: err?.status && err.status === 400 ? "Corrigir" : "Recarregar",
-                        backendError: err?.backend,
-                        onCancel: !(err?.status && err.status === 400) ? () => {
-                            document.getElementById("meuForm").reset();
-                            location.reload();
-                        } : undefined
-                    });
+                if (!response.ok) {
+                    let backend = null;
+                    try { backend = await response.json(); } catch (_) { backend = null; }
+                    throw { status: response.status, backend };
                 }
+
+                esconderSpinner();
+
+                // Modal de sucesso
+                showModal({
+                    title: "Dados enviados com sucesso!",
+                    message: "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
+                    type: "success",
+                    showCancel: false,
+                    confirmText: "Ok",
+                    onConfirm: () => {
+                        document.getElementById("meuForm").reset();
+                        location.reload();
+                    }
+                });
+
+            } catch (err) {
+                esconderSpinner();
+                // Fecha modal de confirmação atual antes de abrir modal de erro
+                const modalEl = document.getElementById('exampleModalLong');
+                const myModal = bootstrap.Modal.getInstance(modalEl);
+                if (myModal) myModal.hide();
+
+                // Modal de erro separado
+                showModal({
+                    title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
+                    message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: mxp@aiesec.org.br" : "",
+                    type: "error",
+                    showConfirm: false,
+                    showCancel: true,
+                    cancelText: err?.status && err.status === 400 ? "Corrigir" : "Recarregar",
+                    backendError: err?.backend,
+                    onCancel: !(err?.status && err.status === 400) ? () => {
+                        document.getElementById("meuForm").reset();
+                        location.reload();
+                    } : undefined
+                });
             }
-        });
+        }
+
     } else {
         // Modal de erro (via função reutilizável)
         showModal({
