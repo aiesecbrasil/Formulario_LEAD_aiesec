@@ -28,8 +28,10 @@ const containerEmail = document.getElementById('emails-container');
 // Importante: a posição na lista é usada para mapear com a lista de AIESECs ativa do backend.
 const escritorios = [
     "AB",  // ABC
+    "GV",  // SÃO PAULO UNIDADE GETÚLIO VARGAS
+    "MK",  // SÃO PAULO UNIDADE MACKENZIE
+    "US",  // SÃO PAULO UNIDADE USP
     "AJ",  // ARACAJU
-    "BA",  // Bauru
     "BH",  // BELO HORIZONTE
     "BS",  // BRASÍLIA
     "CT",  // CURITIBA
@@ -39,20 +41,16 @@ const escritorios = [
     "JP",  // JOÃO PESSOA
     "LM",  // LIMEIRA
     "MZ",  // MACEIÓ
-    "MN",  // MANAUS
     "MA",  // MARINGÁ
     "PA",  // PORTO ALEGRE
     "RC",  // RECIFE
     "RJ",  // RIO DE JANEIRO
     "SS",  // SALVADOR
     "SM",  // SANTA MARIA
-    "GV",  // SÃO PAULO UNIDADE GETÚLIO VARGAS
-    "MK",  // SÃO PAULO UNIDADE MACKENZIE
-    "US",  // SÃO PAULO UNIDADE USP
     "SO",  // SOROCABA
     "UB",  // UBERLÂNDIA
     "VT",  // VITÓRIA
-    "MC" // BRASIL (NACIONAL)
+    "MN",  // MANAUS
 ];
 
 // Armazena o id do comitê local selecionado para envio
