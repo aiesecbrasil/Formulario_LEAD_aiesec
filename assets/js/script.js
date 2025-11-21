@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Modal de erro (centralizado via função reutilizável)
             showModal({
                 title: "Erro de conexão",
-                message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
+                message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: mxp@aiesec.org.br",
                 type: "error",
                 showConfirm: false,
                 showCancel: true,
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Modal de erro em caso de falha de rede/parse
         showModal({
             title: "Erro de conexão",
-            message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: contato@aiesec.org.br",
+            message: "Por favor, Recarregue a Pagina e tente novamente.\nCaso o erro persista contate o email: mxp@aiesec.org.br",
             type: "error",
             showConfirm: false,
             showCancel: true,
@@ -875,7 +875,7 @@ Aceitou Política: Sim`;
                     // Modal de sucesso
                     showModal({
                         title: "Dados enviados com sucesso!",
-                        message: "Em alguns instantes chegará em seu e-mail,\no Link para nosso fit cultural.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:contato@aiesec.org.br",
+                        message: "Em alguns instantes chegará em seu e-mail,\no Link para nosso fit cultural.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
                         type: "success",
                         showCancel: false,
                         confirmText: "Ok",
@@ -895,7 +895,7 @@ Aceitou Política: Sim`;
                     // Modal de erro separado
                     showModal({
                         title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
-                        message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: contato@aiesec.org.br" : "",
+                        message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: mxp@aiesec.org.br" : "",
                         type: "error",
                         showConfirm: false,
                         showCancel: true,
