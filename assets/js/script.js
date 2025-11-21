@@ -875,7 +875,7 @@ Aceitou Política: Sim`;
                     // Modal de sucesso
                     showModal({
                         title: "Dados enviados com sucesso!",
-                        message: "Em breve você receberá uma confirmação por email,\no Link para nosso fit cultural.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
+                        message: "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
                         type: "success",
                         showCancel: false,
                         confirmText: "Ok",
