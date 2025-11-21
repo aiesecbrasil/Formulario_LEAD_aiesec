@@ -875,7 +875,7 @@ Aceitou Política: Sim`;
                     // Modal de sucesso
                     showModal({
                         title: "Dados enviados com sucesso!",
-                        message: "Em alguns instantes chegará em no e-mail informado\n nosso fit cultural",
+                        message: "Em alguns instantes chegará em no e-mail informado\nnosso fit cultural",
                         type: "success",
                         showCancel: false,
                         confirmText: "Ok",
