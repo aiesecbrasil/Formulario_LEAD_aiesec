@@ -10,13 +10,13 @@
  *  - Suporte a parâmetros de URL (campanha e CL)
  * Convenções de documentação:
  *  - Docstrings em JSDoc (/** ... *//*) para funções com @param, @returns, @throws quando aplicável
- *  - Comentários adicionais de contexto em blocos e linhas
- * Observações importantes:
- *  - Lógica original preservada. Apenas comentários/docstrings foram adicionados.
- *  - Este arquivo assume que os elementos de UI (modal, inputs, etc.) existem no HTML.
- *  - Requer Bootstrap (modal), Pikaday (calendário) e um ambiente de navegador.
- * ----------------------------------------------------------------------------
- */
+*  - Comentários adicionais de contexto em blocos e linhas
+* Observações importantes:
+*  - Lógica original preservada. Apenas comentários/docstrings foram adicionados.
+*  - Este arquivo assume que os elementos de UI (modal, inputs, etc.) existem no HTML.
+*  - Requer Bootstrap (modal), Pikaday (calendário) e um ambiente de navegador.
+* ----------------------------------------------------------------------------
+*/
 
 // Containers dos campos dinâmicos de contato
 const containerTelefone = document.getElementById('telefones-container');
@@ -187,7 +187,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Verificação de segurança mais completa
         campos = data?.data?.fields;
-        console.log(campos);
 
         // Verfica se o dado campos é não nulo
         if (!campos) {
@@ -864,6 +863,7 @@ Aceitou Política: Sim`;
                             tag: slugify(parametros.campanha)
                         }),
                     });
+
                     if (!response.ok) {
                         let backend = null;
                         try { backend = await response.json(); } catch (_) { backend = null; }
@@ -887,7 +887,6 @@ Aceitou Política: Sim`;
 
                 } catch (err) {
                     esconderSpinner();
-
                     // Fecha modal de confirmação atual antes de abrir modal de erro
                     const modalEl = document.getElementById('exampleModalLong');
                     const myModal = bootstrap.Modal.getInstance(modalEl);

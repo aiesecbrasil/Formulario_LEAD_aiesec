@@ -19,16 +19,14 @@
     <!-- CSS do Pikaday (calendário) -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css"
-    />
+      href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" />
 
     <!-- CSS do Bootstrap 5 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
+      crossorigin="anonymous" />
 
     <!-- Estilos específicos do formulário -->
     <link rel="stylesheet" href="./assets/css/style.css" />
@@ -36,8 +34,7 @@
     <!-- Viewport responsivo -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+      content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!--
       Dica de Acessibilidade:
@@ -73,8 +70,7 @@
           <button
             type="button"
             class="remove-btn"
-            onclick="removeCampo(this, 'email')"
-          >
+            onclick="removeCampo(this, 'email')">
             ✖
           </button>
         </div>
@@ -99,14 +95,14 @@
           <button
             type="button"
             class="remove-btn"
-            onclick="removeCampo(this, 'telefone')"
-          >
+            onclick="removeCampo(this, 'telefone')">
             ✖
           </button>
         </div>
       </div>
       <!-- Botão para adicionar novo telefone -->
-      <button type="button" class="add-btn" id="telefone" onclick="addTelefone()">
+      <button type="button" class="add-btn" id="telefone"
+        onclick="addTelefone()">
         Adicionar outro
       </button>
       <div class="error-msg" id="erro-telefone"></div>
@@ -118,7 +114,8 @@
       -->
       <label>Data de Nascimento *</label>
       <div class="input-calendario">
-        <input type="text" id="nascimento" placeholder="DD/MM/YYYY" maxlength="10" />
+        <input type="text" id="nascimento" placeholder="DD/MM/YYYY"
+          maxlength="10" />
         <span>📅</span>
       </div>
       <input type="hidden" id="nascimento-iso" name="nascimento" />
@@ -140,13 +137,16 @@
           <input type="checkbox" id="politica" name="politica" required />
           <span>
             <strong>
-              Eu concordo com a coleta e uso dos meus dados conforme a Política de Privacidade *
+              Eu concordo com a coleta e uso dos meus dados conforme a Política
+              de Privacidade *
             </strong>
           </span>
         </label>
         <div class="checkbox-msg">
-          Estamos coletando seus dados para enviar informações sobre oportunidades de intercâmbio.
-          Seus dados serão tratados conforme a LGPD e não serão compartilhados sem consentimento.
+          Estamos coletando seus dados para enviar informações sobre
+          oportunidades de intercâmbio.
+          Seus dados serão tratados conforme a LGPD e não serão compartilhados
+          sem consentimento.
         </div>
         <div class="error-msg" id="erro-politica"></div>
       </div>
@@ -168,8 +168,7 @@
       id="exampleModalLong"
       tabindex="-1"
       aria-labelledby="exampleModalLongTitle"
-      aria-hidden="true"
-    >
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -181,14 +180,14 @@
               class="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              id="botaoFechar"
-            ></button>
+              id="botaoFechar"></button>
           </div>
           <div class="modal-body">
             <pre id="DadosAqui"></pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="botaoCancelar">
+            <button type="button" class="btn btn-secondary"
+              data-bs-dismiss="modal" id="botaoCancelar">
               Cancelar
             </button>
             <button type="button" class="btn btn-primary" id="botaoConfirmar">
@@ -204,8 +203,7 @@
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
+      crossorigin="anonymous"></script>
     <script src="./assets/js/script.js"></script>
   </body>
 </html>

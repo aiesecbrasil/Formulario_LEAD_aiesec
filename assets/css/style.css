@@ -18,18 +18,25 @@
 /* -------------------- Layout e tipografia base -------------------- */
 body {
     font-family: 'Arial', sans-serif;
-    max-width: 650px;           /* largura máxima do container do formulário */
-    margin: 40px auto;          /* centraliza e dá respiro superior/inferior */
-    background-color: #007BFF;  /* azul de fundo da página */
-    padding: 30px;              /* espaçamento interno geral */
-    border-radius: 12px;        /* cantos arredondados para o container */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* leve sombra para destaque */
+    max-width: 650px;
+    /* largura máxima do container do formulário */
+    margin: 40px auto;
+    /* centraliza e dá respiro superior/inferior */
+    background-color: #007BFF;
+    /* azul de fundo da página */
+    padding: 30px;
+    /* espaçamento interno geral */
+    border-radius: 12px;
+    /* cantos arredondados para o container */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    /* leve sombra para destaque */
 }
 
 /* Título (caso utilizado no HTML) */
 h2 {
     text-align: center;
-    color: #004a99;            /* Azul AIESEC */
+    color: #004a99;
+    /* Azul AIESEC */
     margin-bottom: 30px;
     font-size: 28px;
     font-weight: 600;
@@ -47,7 +54,8 @@ h2 {
     padding: 14px 12px;
     font-size: 16px;
     border: 1px solid #ccd6eb;
-    border-radius: 8px !important; /* mantém borda arredondada, mesmo com Bootstrap */
+    border-radius: 8px !important;
+    /* mantém borda arredondada, mesmo com Bootstrap */
     box-sizing: border-box;
     background-color: #fff;
 }
@@ -60,8 +68,10 @@ h2 {
     transform: translateY(-50%);
     color: #777;
     padding: 0 4px;
-    transition: 0.2s all;       /* animação suave para subida/redução do label */
-    pointer-events: none;        /* evita clique no label quando sobreposto */
+    transition: 0.2s all;
+    /* animação suave para subida/redução do label */
+    pointer-events: none;
+    /* evita clique no label quando sobreposto */
 }
 
 /* Estado do label quando input está focado ou preenchido */
@@ -75,14 +85,17 @@ h2 {
 /* -------------------- Campos múltiplos (e-mail/telefone) -------------------- */
 .campo-multiplo {
     display: flex;
-    gap: 10px;                 /* espaçamento entre select/input/botão */
+    gap: 10px;
+    /* espaçamento entre select/input/botão */
     align-items: center;
     margin-bottom: 12px;
-    flex-wrap: wrap;           /* quebra linha em telas menores */
+    flex-wrap: wrap;
+    /* quebra linha em telas menores */
 }
 
 .campo-multiplo select {
-    flex: 0 0 28%;             /* largura fixa relativa para o select */
+    flex: 0 0 28%;
+    /* largura fixa relativa para o select */
     min-width: 120px;
     padding: 12px;
     border-radius: 8px;
@@ -92,7 +105,8 @@ h2 {
 }
 
 .campo-multiplo input {
-    flex: 1;                   /* ocupa o restante do espaço */
+    flex: 1;
+    /* ocupa o restante do espaço */
     padding: 14px 12px;
     font-size: 16px;
     border: 1px solid #ccd6eb;
@@ -108,22 +122,28 @@ h2 {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.2s;      /* leve transição para hover */
+    transition: all 0.2s;
+    /* leve transição para hover */
 }
 
 .add-btn {
-    background-color: #fff; /* branco principal */
-    color: #005a9e; /* texto azul */
+    background-color: #fff;
+    /* branco principal */
+    color: #005a9e;
+    /* texto azul */
     margin-bottom: 10px;
 }
 
 .add-btn:hover {
-    background-color: #005a9e;/* azul principal */
-    color: #fff; /* texto branco */
+    background-color: #005a9e;
+    /* azul principal */
+    color: #fff;
+    /* texto branco */
 }
 
 .remove-btn {
-    background-color: #dc3545; /* vermelho para ação de remoção */
+    background-color: #dc3545;
+    /* vermelho para ação de remoção */
     color: #fff;
 }
 
@@ -138,7 +158,8 @@ h2 {
 
 /* Mensagens de erro inline abaixo dos campos */
 .error-msg {
-    color: #6b131c;            /* tom de vermelho escuro */
+    color: #6b131c;
+    /* tom de vermelho escuro */
     font-size: 13px;
     margin-top: 4px;
 }
@@ -165,7 +186,8 @@ h2 {
     transform: translateY(-50%);
     font-size: 20px;
     color: #0072ce;
-    pointer-events: none;       /* ícone somente visual */
+    pointer-events: none;
+    /* ícone somente visual */
 }
 
 /* -------------------- Campos adicionais (selects, etc.) -------------------- */
@@ -205,20 +227,23 @@ h2 {
 .checkbox-msg {
     font-size: 13px;
     color: #434242;
-    margin: 6px 0 0 26px;   /* recuo para alinhar com a caixa do checkbox */
+    margin: 6px 0 0 26px;
+    /* recuo para alinhar com a caixa do checkbox */
     line-height: 1.4;
 }
 
 /* -------------------- Ajustes no Modal (Bootstrap) -------------------- */
 .modal {
-    position: fixed;           /* mantém centralizado mesmo ao rolar a página */
+    position: fixed;
+    /* mantém centralizado mesmo ao rolar a página */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .modal-backdrop {
-    background-color: #ffffff; /* backdrop claro para o tema atual */
+    background-color: #ffffff;
+    /* backdrop claro para o tema atual */
 }
 
 .modal-title {
@@ -229,7 +254,8 @@ h2 {
     text-align: center;
 }
 
-.modal-body {       /* indentação da primeira linha */
+.modal-body {
+    /* indentação da primeira linha */
     font-family: 'Arial', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
@@ -240,7 +266,8 @@ h2 {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: #f8f9fa; /* cinza claro (compatível com bootstrap) */
+    background-color: #f8f9fa;
+    /* cinza claro (compatível com bootstrap) */
 }
 
 /* -------------------- Botão de envio do formulário -------------------- */
@@ -285,8 +312,10 @@ button[type="submit"]:hover {
 .spinner-border {
     width: 3rem;
     height: 3rem;
-    border: 4px solid rgba(0, 0, 0, 0.1); /* borda mais clara */
-    border-top: 4px solid #007bff;        /* cor principal (azul padrão bootstrap) */
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    /* borda mais clara */
+    border-top: 4px solid #007bff;
+    /* cor principal (azul padrão bootstrap) */
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -300,8 +329,13 @@ button[type="submit"]:hover {
 
 /* Animação de rotação contínua */
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ============================================================================
@@ -313,7 +347,8 @@ button[type="submit"]:hover {
 
 button.loading {
     position: relative;
-    pointer-events: none;   /* Evita múltiplos cliques */
+    pointer-events: none;
+    /* Evita múltiplos cliques */
     opacity: 0.8;
 }
 
