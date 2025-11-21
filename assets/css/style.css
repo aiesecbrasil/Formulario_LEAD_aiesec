@@ -208,8 +208,8 @@ label {
 /* -------------------- Checkbox da Política de Privacidade -------------------- */
 /* Oculta o checkbox padrão */
 .checkbox-label input {
-    appearance: none;
     -webkit-appearance: none;
+    appearance: none;
     width: 20px;
     height: 20px;
     border: 1px solid #0d6efd;
