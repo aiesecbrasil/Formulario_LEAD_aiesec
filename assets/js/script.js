@@ -9,20 +9,23 @@
  *  - Interações de UI: Modal padronizado, spinner de carregamento, calendário (Pikaday)
  *  - Suporte a parâmetros de URL (campanha e CL)
  * Convenções de documentação:
- *  - Docstrings em JSDoc (/** ... *//*) para funções com @param, @returns, @throws quando aplicável
-*  - Comentários adicionais de contexto em blocos e linhas
-* Observações importantes:
+ *  - Docstrings em JSDoc (/** ... *\/*) para funções com @param, @returns, @throws quando aplicável
+ *  - Comentários adicionais de contexto em blocos e linhas
+ * Observações importantes:
 *  - Lógica original preservada. Apenas comentários/docstrings foram adicionados.
 *  - Este arquivo assume que os elementos de UI (modal, inputs, etc.) existem no HTML.
 *  - Requer Bootstrap (modal), Pikaday (calendário) e um ambiente de navegador.
+*  - Ambiente: executa no browser; depende de elementos: #meuForm, modal #exampleModalLong e campos referenciados.
 * ----------------------------------------------------------------------------
 */
 
-// Containers dos campos dinâmicos de contato
+// Containers dos campos dinâmicos de contato (presentes no HTML)
+// Side effect: acessa o DOM na carga do script.
 const containerTelefone = document.getElementById('telefones-container');
 const containerEmail = document.getElementById('emails-container');
 
 // Lista de siglas dos escritórios (comitês locais) na ordem usada pelo backend
+// Importante: a posição na lista é usada para mapear com a lista de AIESECs ativa do backend.
 const escritorios = [
     "AB",  // ABC
     "AJ",  // ARACAJU
@@ -53,7 +56,7 @@ const escritorios = [
 ];
 
 // Armazena o id do comitê local selecionado para envio
-const idCL = [];
+let idCL = [];
 
 // Repositório de nomes de campos com erro na validação final
 const camposErro = [];
@@ -95,6 +98,11 @@ containerTelefone.innerHTML = '';
  * @param {Function} [options.onCancel] Callback executado ao cancelar
  * @param {Object|string} [options.backendError] Objeto/JSON de erro do backend ou string de erro
  * @returns {void}
+ */
+/**
+ * Exibe um modal padronizado de acordo com elementos Bootstrap existentes no DOM.
+ * Efeitos colaterais: altera conteúdo/estado de #exampleModalLong e exibe o modal, substitui listeners dos botões.
+ * Dependências: window.bootstrap.Modal, elementos com ids exampleModalLong, exampleModalLongTitle, botaoConfirmar, botaoCancelar, DadosAqui.
  */
 function showModal(options) {
     const {
@@ -186,6 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await response.json();
 
         // Verificação de segurança mais completa
+        // Campos dinamicamente configuráveis vindos do backend (formio like)
         campos = data?.data?.fields;
 
         // Verfica se o dado campos é não nulo
@@ -239,6 +248,13 @@ document.addEventListener("DOMContentLoaded", async () => {
  *
  * @param {string} cl Sigla do comitê local (por exemplo: "RJ"). Se ausente, cria o select na página.
  * @returns {void}
+ */
+/**
+ * Cria o bloco de seleção de AIESEC mais próxima se não houver CL pré-definido.
+ * Side effects:
+ *  - Escreve em #aiesecs o HTML do label/select/erro
+ *  - Popula opções a partir de campos (metadados) e habilita o select
+ *  - Atualiza variáveis globais todasAiesecs e indiceSiglaCL
  */
 function criarCampos(cl) {
     const aiesec = document.getElementById("aiesecs");
@@ -319,6 +335,10 @@ function criarCampos(cl) {
  * @param {HTMLInputElement} input Campo de input (type="tel") ao qual a máscara será aplicada
  * @returns {void}
  */
+/**
+ * Adiciona listener de input para formatar telefone brasileiro no campo fornecido.
+ * Não altera valor inicial; apenas formata conforme digitação.
+ */
 function aplicarMascaraTelefone(input) {
     input.addEventListener('input', function (e) {
         let valor = e.target.value.replace(/\D/g, ''); // remove tudo que não for número
@@ -349,6 +369,9 @@ function aplicarMascaraTelefone(input) {
  * @param {string} valorFormatado Telefone possivelmente formatado como (DD) 9 XXXX-XXXX
  * @returns {string} Apenas números (ex.: "11987654321")
  */
+/**
+ * Remove todos caracteres não numéricos de um telefone formatado.
+ */
 function limparTelefoneFormatado(valorFormatado) {
     return valorFormatado.replace(/\D/g, ''); // remove tudo que não for número
 }
@@ -374,6 +397,10 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
  * @param {HTMLInputElement} input Campo de telefone a ser validado
  * @returns {void}
  */
+/**
+ * Anexa validação por regex ao blur do campo de telefone.
+ * Exige formato (DD) 9 XXXX-XXXX e escreve mensagens em #erro-telefone.
+ */
 function aplicarValidacaoTelefone(input) {
     input.addEventListener('blur', function (e) {
         const valor = e.target.value.trim();
@@ -397,6 +424,10 @@ function aplicarValidacaoTelefone(input) {
  *
  * @param {HTMLInputElement} input Campo de e-mail (type="email")
  * @returns {void}
+ */
+/**
+ * Adiciona validação básica de e-mail (formato geral) no evento blur do campo informado.
+ * Mensagens são exibidas em #erro-email.
  */
 function validarEmailComProvedor(input) {
     input.addEventListener('blur', function (e) {
@@ -431,6 +462,10 @@ function validarEmailComProvedor(input) {
  * @param {string} id ID do input de texto a validar (ex.: 'nome')
  * @param {string} erroId ID do elemento onde mensagens de erro serão exibidas
  * @returns {void}
+ */
+/**
+ * Aplica validação alfabética (com acentos) ao campo identificado por id.
+ * Mensagens são escritas no elemento de erro indicado por erroId.
  */
 function validarNome(id, erroId) {
     const input = document.getElementById(id);
@@ -470,6 +505,13 @@ document.querySelectorAll('input[name="telefone[]"]').forEach(input => {
  * Dependências: 'campos' populado com metadados do backend.
  *
  * @returns {Promise<void>} Promessa resolvida após inserir e preparar o campo
+ */
+/**
+ * Adiciona dinamicamente um grupo de campos de e-mail ao container.
+ * Side effects:
+ *  - Insere elementos no DOM
+ *  - Habilita/desabilita botões de remoção
+ *  - Emite postMessage para parent (ajuste de iframe)
  */
 async function addEmail() {
 
@@ -520,6 +562,10 @@ async function addEmail() {
  * Dependências: 'campos' populado com metadados do backend.
  *
  * @returns {Promise<void>} Promessa resolvida após inserir e preparar o campo
+ */
+/**
+ * Adiciona dinamicamente um grupo de campos de telefone ao container.
+ * Side effects: idem addEmail(), além de aplicar máscara/validação.
  */
 async function addTelefone() {
 
@@ -575,6 +621,10 @@ async function addTelefone() {
  * @param {('email'|'telefone')} tipo Tipo de campo a remover
  * @returns {void}
  */
+/**
+ * Remove um grupo de campo do tipo especificado mantendo pelo menos um.
+ * Reatribui estado de desabilitado no último botão quando aplicável.
+ */
 function removeCampo(botao, tipo) {
     const container = tipo === 'email'
         ? document.getElementById('emails-container')
@@ -609,6 +659,9 @@ const inputISO = document.getElementById('nascimento-iso'); // armazena YYYY-MM-
  * @param {Date} date Instância de Date válida
  * @returns {void}
  */
+/**
+ * Sincroniza a data selecionada entre input visível, input ISO oculto e o Pikaday.
+ */
 function setDate(date) {
     if (date instanceof Date && !isNaN(date)) {
         // Formato brasileiro no input visível
@@ -632,6 +685,7 @@ function setDate(date) {
  * - Intervalo de anos [1900, ano atual]
  * - Conversão toString/parse compatível com DD/MM/YYYY
  */
+// Instancia e configura o calendário de data de nascimento (Pikaday)
 const picker = new Pikaday({
     field: inputVisivel,
     format: 'DD/MM/YYYY',
@@ -659,6 +713,7 @@ const picker = new Pikaday({
 // Atualização manual pelo input
 // - Mantém a máscara de data enquanto o usuário digita
 // - Quando completo, sincroniza com o calendário e o campo ISO
+// Máscara simples de data no input visível e sincronização com o calendário
 inputVisivel.addEventListener('input', () => {
     let valor = inputVisivel.value.replace(/\D/g, ''); // remove tudo que não for número
 
@@ -819,87 +874,7 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
             email: e.email,
             tipo: e.tipo
         }));
-
-
-        let dados = `
-Nome: ${nome}\n
-Emails: ${emails.map(email => `${email.email} (${email.tipoTraduzido})`).join('\t\t')}\n
-Telefones: ${telefones.map(telefone => `${telefone.numero} (${telefone.tipoTraduzido})`).join('\t\t')}\n
-Data de Nascimento: ${inputVisivel.value}`;
-
-        if (aiesecProxima) {
-            dados += `
-
-AIESEC: ${aiesecProxima.options[aiesecProxima.selectedIndex].textContent}`;
-        }
-
-        // Sempre presente
-        dados += `
-
-Aceitou Política: Sim`;
-
-
-        async () => {
-            mostrarSpinner();
-            try {
-                const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-card-psel", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nome,
-                        emails: emailsEnvio,
-                        telefones: telefonesEnvio,
-                        dataNascimento: inputISO.value,
-                        idComite: idCL[0],
-                        idAutorizacao: "1",
-                        tag: slugify(parametros.campanha)
-                    }),
-                });
-
-                if (!response.ok) {
-                    let backend = null;
-                    try { backend = await response.json(); } catch (_) { backend = null; }
-                    throw { status: response.status, backend };
-                }
-
-                esconderSpinner();
-
-                // Modal de sucesso
-                showModal({
-                    title: "Dados enviados com sucesso!",
-                    message: "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email:mxp@aiesec.org.br",
-                    type: "success",
-                    showCancel: false,
-                    confirmText: "Ok",
-                    onConfirm: () => {
-                        document.getElementById("meuForm").reset();
-                        location.reload();
-                    }
-                });
-
-            } catch (err) {
-                esconderSpinner();
-                // Fecha modal de confirmação atual antes de abrir modal de erro
-                const modalEl = document.getElementById('exampleModalLong');
-                const myModal = bootstrap.Modal.getInstance(modalEl);
-                if (myModal) myModal.hide();
-
-                // Modal de erro separado
-                showModal({
-                    title: err?.status && err.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
-                    message: !(err?.status && err.status === 400) ? "Por favor, tente novamente.\nCaso o erro persista, contate o email: mxp@aiesec.org.br" : "",
-                    type: "error",
-                    showConfirm: false,
-                    showCancel: true,
-                    cancelText: err?.status && err.status === 400 ? "Corrigir" : "Recarregar",
-                    backendError: err?.backend,
-                    onCancel: !(err?.status && err.status === 400) ? () => {
-                        document.getElementById("meuForm").reset();
-                        location.reload();
-                    } : undefined
-                });
-            }
-        }
+        enviarDados(nome, emailsEnvio, telefonesEnvio);
 
     } else {
         // Modal de erro (via função reutilizável)
@@ -915,6 +890,78 @@ Aceitou Política: Sim`;
 
 });
 
+/**
+ * Envia dados do formulário ao backend e apresenta feedback com modais.
+ *
+ * @param {string} nome
+ * @param {{email: string, tipo: string}[]} emailsEnvio
+ * @param {{numero: string, tipo: string}[]} telefonesEnvio
+ * @throws Exibe modal de erro em quaisquer falhas de rede ou validação (HTTP 4xx/5xx)
+ */
+async function enviarDados(nome, emailsEnvio, telefonesEnvio) {
+    mostrarSpinner();
+    try {
+        const response = await fetch("https://baziAiesec.pythonanywhere.com/adicionar-card-psel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nome,
+                emails: emailsEnvio,
+                telefones: telefonesEnvio,
+                dataNascimento: inputISO.value,
+                idComite: idCL[0],
+                idAutorizacao: "1",
+                tag: slugify(parametros.campanha)
+            }),
+        });
+
+        if (!response.ok) {
+            let backend = null;
+            try { backend = await response.json(); } catch (_) { backend = null; }
+            throw { status: response.status, backend };
+        }
+
+        esconderSpinner();
+
+        showModal({
+            title: "Dados enviados com sucesso!",
+            message:
+                "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email: mxp@aiesec.org.br",
+            type: "success",
+            showCancel: false,
+            confirmText: "Ok",
+            onConfirm: () => {
+                document.getElementById("meuForm").reset();
+                location.reload();
+            }
+        });
+
+    } catch (err) {
+        esconderSpinner();
+
+        showModal({
+            title: err?.status === 400 ? "Erro de Validação" : "Falha ao Enviar",
+            message:
+                err?.status === 400
+                    ? ""
+                    : "Por favor, tente novamente.\nCaso o erro persista, contate o email: mxp@aiesec.org.br",
+            type: "error",
+            showConfirm: false,
+            showCancel: true,
+            cancelText: err?.status === 400 ? "Corrigir" : "Recarregar",
+            backendError: err?.backend,
+            onCancel:
+                err?.status === 400
+                    ? undefined
+                    : () => {
+                          document.getElementById("meuForm").reset();
+                          location.reload();
+                      }
+        });
+    }
+}
+
+
 // ============================================================================
 // -------------------- FUNÇÕES DE CONTROLE DO SPINNER ------------------------
 // ============================================================================
@@ -927,6 +974,9 @@ Aceitou Política: Sim`;
  * - Pode ser reutilizado em qualquer parte do código.
  *
  * @returns {void}
+ */
+/**
+ * Cria um overlay com spinner para bloquear a interface durante operações assíncronas.
  */
 function mostrarSpinner() {
     // Verifica se já existe um spinner ativo para evitar duplicação
@@ -976,6 +1026,9 @@ function mostrarSpinner() {
  *
  * @returns {void}
  */
+/**
+ * Remove o overlay de spinner se existir.
+ */
 function esconderSpinner() {
     const overlay = document.getElementById('spinner-overlay');
     if (overlay) overlay.remove();
@@ -989,6 +1042,12 @@ function esconderSpinner() {
  *
  * @param {string[]} palavras Lista de palavras a traduzir
  * @returns {{ original: string, traduzido: string }[]} Mapeamento original/traduzido para cada palavra
+ */
+/**
+ * Traduz identificadores de tipos de contato para PT-BR a partir de um dicionário interno.
+ *
+ * @param {string[]} palavras
+ * @returns {{ original: string, traduzido: string }[]}
  */
 async function traduzirPalavras(palavras) {
     // 1. Tabela interna de termos comuns (manual, sem JSON externo)
@@ -1027,6 +1086,10 @@ async function traduzirPalavras(palavras) {
  * @param {{ cl?: string, campanha?: string }} parametros Objeto com parâmetros de URL processados
  * @returns {Promise<void>}
  */
+/**
+ * Configura contexto de CL a partir de parâmetros e injeta campos iniciais de email/telefone.
+ * Side effects: altera variáveis globais indiceSiglaCL, todasAiesecs, idCL e manipula DOM.
+ */
 async function preencherDropdown(parametros) {
     if (parametros.cl) {
         indiceSiglaCL = escritorios.indexOf(parametros.cl);
@@ -1046,6 +1109,10 @@ async function preencherDropdown(parametros) {
  *
  * @returns {Promise<{ cl: string, campanha: string }>} Objeto de parâmetros
  */
+/**
+ * Lê parâmetros de URL usados pelo formulário e normaliza valores.
+ * @returns {{ cl: string, campanha: string }}
+ */
 async function ParamentroURL() {
     const params = new URLSearchParams(window.location.search);
     const cl = (params.get("utm_term") || "").toUpperCase();
@@ -1062,6 +1129,9 @@ async function ParamentroURL() {
  *
  * @param {string} texto Texto de entrada
  * @returns {string} Slug normalizado
+ */
+/**
+ * Gera um slug URL-safe preservando hífens e barras simples.
  */
 function slugify(texto) {
     return texto
