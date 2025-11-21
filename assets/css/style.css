@@ -237,7 +237,7 @@ h2 {
     color: #000000;
     text-align: left;
     padding: 2rem;
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
     flex-direction: column;
