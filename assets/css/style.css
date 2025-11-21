@@ -230,25 +230,30 @@ h2 {
 }
 
 .modal-body {
-    text-indent: 30px;        /* indentação da primeira linha */
+    /* --- Tipografia e Layout --- */
+    text-indent: 30px; 
     font-family: 'Arial', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
     color: #000000;
     text-align: left;
     padding: 2rem;
-    background-color: #f8f9fa; /* cinza claro (compatível com bootstrap) */
+    background-color: #f8f9fa; 
+    box-sizing: border-box; 
+    display: block; 
+    
+    /* --- Controles de Quebra de Texto --- */
 
-    display: block;           /* importante: deixa o texto fluir naturalmente */
+    /* 1. Garantir que o comportamento padrão de quebra esteja ativo */
+    white-space: normal; 
 
-    /* Garantir quebra automática */
-    white-space: normal;
+    /* 2. Permite quebrar palavras muito longas para evitar transbordamento */
     overflow-wrap: break-word;
-    word-wrap: break-word;
+    word-wrap: break-word; /* Alias (legado) */
 
-    box-sizing: border-box;   /* inclui padding na largura total */
+    /* 3. Força a quebra de strings sem espaços em qualquer caractere (Solução para o scroll) */
+    word-break: break-all; 
 }
-
 
 /* -------------------- Botão de envio do formulário -------------------- */
 button[type="submit"] {
