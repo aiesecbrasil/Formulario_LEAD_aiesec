@@ -242,6 +242,10 @@ h2 {
     align-items: center;
     flex-direction: column;
     background-color: #f8f9fa; /* cinza claro (compatível com bootstrap) */
+    /* Garantir quebra automática */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* -------------------- Botão de envio do formulário -------------------- */
