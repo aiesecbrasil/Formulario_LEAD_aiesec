@@ -112,14 +112,14 @@ h2 {
 }
 
 .add-btn {
-    background-color: #fff; /* azul principal */
-    color: #0072ce;
+    background-color: #fff; /* branco principal */
+    color: #0072ce; /* texto azul */
     margin-bottom: 10px;
 }
 
 .add-btn:hover {
-    background-color: #005a9e;
-    color: #fff;
+    background-color: #005a9e;/* azul principal */
+    color: #fff; /* texto branco */
 }
 
 .remove-btn {
