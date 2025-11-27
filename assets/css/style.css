@@ -272,6 +272,8 @@ label {
 
 /* -------------------- Ajustes no Modal (Bootstrap) -------------------- */
 .modal {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
     position: fixed;
     /* mantém centralizado mesmo ao rolar a página */
     top: 50%;
