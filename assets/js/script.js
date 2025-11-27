@@ -36,7 +36,6 @@ const escritorios = [
     "BS",  // BRASÍLIA
     "CT",  // CURITIBA
     "FL",  // FLORIANÓPOLIS
-    "FR",  // FRANCA
     "FO",  // FORTALEZA
     "JP",  // JOÃO PESSOA
     "LM",  // LIMEIRA
