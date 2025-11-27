@@ -55,6 +55,8 @@ const escritorios = [
 
 // Armazena o id do comitê local selecionado para envio
 let idCL = [];
+let idCanal = [];
+let idTipoAnuncio = [];
 
 // Repositório de nomes de campos com erro na validação final
 const camposErro = [];
@@ -64,6 +66,7 @@ let campos;
 
 // Índice do CL dentro de 'escritorios' (calculado por parâmetro de URL)
 let indiceSiglaCL;
+
 
 // Parâmetros de URL processados em objeto ({ cl, campanha })
 let parametros;
@@ -909,6 +912,8 @@ async function enviarDados(nome, emailsEnvio, telefonesEnvio) {
                 dataNascimento: inputISO.value,
                 idComite: idCL[0],
                 idAutorizacao: "1",
+                idCanal:idCanal[0],
+                idTipoAnuncio:idTipoAnuncio[0],
                 tag: slugify(parametros.campanha)
             }),
         });
@@ -1095,6 +1100,13 @@ async function preencherDropdown(parametros) {
         todasAiesecs = campos.find(field => field.label === "AIESEC mais próxima").config.settings.options.filter(opcoes => opcoes.status == "active");
         idCL = todasAiesecs.filter((_, index) => index === indiceSiglaCL).map(i => i.id);
     }
+    if (parametros.canal) {
+        idCanal = campos.find(field => field.label === "tag-origem").config.settings.options.filter(opcoes => opcoes.status == "active").filter(canal => slugify(canal.text) === parametros.canal).map(canal => canal.id); 
+    }
+
+    if (parametros.tipoAnuncio) {
+        idTipoAnuncio = campos.find(field => field.label === "tag-meio").config.settings.options.filter(opcoes => opcoes.status == "active").filter(tipo => slugify(tipo.text) === parametros.tipoAnuncio).map(tipo => tipo.id);
+    }
 
     addEmail();
     addTelefone();
@@ -1114,10 +1126,14 @@ async function preencherDropdown(parametros) {
 async function ParamentroURL() {
     const params = new URLSearchParams(window.location.search);
     const cl = (params.get("utm_term") || "").toUpperCase();
+    const canal = (params.get("utm_source")||"").toLowerCase();
+    const tipoAnuncio = (params.get("utm_medium")||"").toLowerCase();
     const campanha = decodeURIComponent(params.get("utm_campaign") || "");
     return {
         cl,
-        campanha
+        campanha,
+        canal,
+        tipoAnuncio
     };
 }
 
