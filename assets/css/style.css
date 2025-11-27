@@ -283,6 +283,11 @@ label {
     word-break: normal;        /* mais natural que break-all */
 }
 
+#DadosAqui {
+    font-family: 'Lato', sans-serif !important;
+    font-size: 1rem !important;
+}
+
 .modal-backdrop {
     background-color: #ffffff;
     /* backdrop claro para o tema atual */
