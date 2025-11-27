@@ -279,6 +279,8 @@ label {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    overflow-wrap: break-word; /* quebra de linha quando necessário */
+    word-break: normal;        /* mais natural que break-all */
 }
 
 .modal-backdrop {
