@@ -517,7 +517,7 @@ async function addEmail() {
 
     const div = document.createElement('div');
 
-    const tipoEmail = campos.find(field => field.label === "E-mail");
+    const tipoEmail = campos.find(field => field.label === "E-mail pessoal");
     const opcoesDeTipoEmail = tipoEmail.config.settings.possible_types;
 
     div.className = 'campo-multiplo';
@@ -572,7 +572,7 @@ async function addTelefone() {
     const div = document.createElement('div');
 
     // Pega o campo "Telefone" dentro do array 'campos'
-    const tipoTelefone = campos.find(field => field.label === "Telefone/Celular");
+    const tipoTelefone = campos.find(field => field.label === "Celular (WhatsApp");
     const opcoesDeTipoTelefone = tipoTelefone.config.settings.possible_types;
 
     div.className = 'campo-multiplo';
