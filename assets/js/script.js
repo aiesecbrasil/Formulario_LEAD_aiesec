@@ -572,7 +572,7 @@ async function addTelefone() {
     const div = document.createElement('div');
 
     // Pega o campo "Telefone" dentro do array 'campos'
-    const tipoTelefone = campos.find(field => field.label === "Celular (WhatsApp");
+    const tipoTelefone = campos.find(field => field.label === "Celular (WhatsApp)");
     const opcoesDeTipoTelefone = tipoTelefone.config.settings.possible_types;
 
     div.className = 'campo-multiplo';
