@@ -1,16 +1,3 @@
-showModal({
-            title: "Dados enviados com sucesso!",
-            message:
-                "Em breve você receberá uma confirmação por email.\nCaso não receba, verifique sua caixa de spam ou\nentre em contato com o email: processo.seletivo@aiesec.org.br",
-            type: "success",
-            showCancel: false,
-            confirmText: "Ok",
-            onConfirm: () => {
-                document.getElementById("meuForm").reset();
-                location.reload();
-            }
-        });
-
 /*
  * ----------------------------------------------------------------------------
  * Arquivo: assets/js/script.js
