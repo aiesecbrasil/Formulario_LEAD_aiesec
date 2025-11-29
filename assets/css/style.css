@@ -276,7 +276,7 @@ label {
     font-size: 1rem !important;
     position: fixed;
     /* mantém centralizado mesmo ao rolar a página */
-    top: 90%;
+    top: 70%;
     left: 50%;
     transform: translate(-50%, -50%);
     overflow-wrap: break-word; /* quebra de linha quando necessário */
