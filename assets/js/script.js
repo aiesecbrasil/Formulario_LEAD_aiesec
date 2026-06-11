@@ -822,10 +822,23 @@ document.getElementById('meuForm').addEventListener('submit', function (e) {
             camposErro.push(`Selecione uma opção de ${id}.`);
         } else {
             document.getElementById('erro-' + id).textContent = "";
-        }
-        if (campo && campo.value !== "" && id === "aiesec") {
-            aiesecProxima = document.getElementById('aiesec');
-            idCL.push(aiesecProxima.options[aiesecProxima.selectedIndex].value);
+            if (id === "aiesec") {
+                let selectedId = campo.value;
+
+                // Mapeamento para redirecionamento de escritórios selecionados no formulário
+                const redirecionamentos = {
+                    '8': '44',  // Brasília (DF) -> Uberlândia (MG)
+                    '61': '15', // Manaus (AM) -> Fortaleza (CE)
+                    '25': '32'  // Maceió (AL) -> Recife (PE)
+                };
+
+                if (redirecionamentos[selectedId]) {
+                    selectedId = redirecionamentos[selectedId];
+                }
+
+                // Limpa o array e adiciona o ID (original ou redirecionado)
+                idCL = [selectedId];
+            }
         }
     });
 
@@ -1124,10 +1137,22 @@ async function preencherDropdown(parametros) {
  */
 async function ParamentroURL() {
     const params = new URLSearchParams(window.location.search);
-    const cl = (params.get("utm_term") || "").toUpperCase();
+    let cl = (params.get("utm_term") || "").toUpperCase();
     const canal = (params.get("utm_source")||"").toLowerCase();
     const tipoAnuncio = (params.get("utm_medium")||"").toLowerCase();
     const campanha = decodeURIComponent(params.get("utm_campaign") || "");
+
+    // Redirecionamento de CLs específicos
+    const redirecionamentos = {
+        'BS': 'UB', // Brasília -> Uberlândia
+        'MN': 'FO', // Manaus -> Fortaleza
+        'MZ': 'RC'  // Maceió -> Recife
+    };
+
+    if (redirecionamentos[cl]) {
+        cl = redirecionamentos[cl];
+    }
+
     return {
         cl,
         campanha,
